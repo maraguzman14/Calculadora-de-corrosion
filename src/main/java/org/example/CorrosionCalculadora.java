@@ -1,9 +1,6 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class CorrosionCalculadora {
     public static void main(String[] args) {
@@ -88,21 +85,21 @@ public class CorrosionCalculadora {
             double fuerzaElectromotriz = calcularFemEstandar(potencialElectrodo2, potencialElectrodo1);
             int nCelda = calcularMCM(electronesAnodo, electronesCatodo);
 
-            // Fórmula del profesor: E = E° + (0.0592 / n) * log10([ion])
+            // Fórmula: E = E° + (0.0592 / n) * log10([ion])
             double nernstAnodo = potencialElectrodo1 + ((0.0592 / electronesAnodo) * Math.log10(concAnodo));
             double nernstCatodo = potencialElectrodo2 + ((0.0592 / electronesCatodo) * Math.log10(concCatodo));
             double fem = fuerzaElectromotriz + ((0.0592 / nCelda) * Math.log10(concCatodo / concAnodo));
 
-            double femEstandarRedondeada = Math.round(fuerzaElectromotriz * 100.0) / 100.0;
-            double femRedondeada = Math.round(fem * 100.0) / 100.0;
+            double femEstandarRedondeada = Math.round(fuerzaElectromotriz * 1000.0) / 1000.0;
+            double femRedondeada = Math.round(fem * 1000.0) / 1000.0;
 
             System.out.println("----------------------------------Resultados----------------------------------------");
             System.out.println("Ánodo (especie que se oxida): " + anodo);
-            System.out.println("  Potencial (Nernst): " + (Math.round(nernstAnodo * 100.0) / 100.0) + " V");
+            System.out.println("  Potencial (Nernst): " + String.format(Locale.US, "%.3f", nernstAnodo) + " V");
             System.out.println("Cátodo (especie que se reduce): " + catodo);
-            System.out.println("  Potencial (Nernst): " + (Math.round(nernstCatodo * 100.0) / 100.0) + " V");
-            System.out.println("FEM Estándar (E° celda): " + femEstandarRedondeada + " V");
-            System.out.println("FEM (Potencial de Celda): " + femRedondeada + " V");
+            System.out.println("  Potencial (Nernst): " + String.format(Locale.US, "%.3f", nernstCatodo) + " V");
+            System.out.println("FEM Estándar (E° celda): " + String.format(Locale.US, "%.3f", femEstandarRedondeada) + " V");
+            System.out.println("FEM (Potencial de Celda): " + String.format(Locale.US, "%.3f", femRedondeada) + " V");
 
             if (femRedondeada > 0) {
                 System.out.println("Conclusión: La reacción es ESPONTÁNEA (ocurre por sí sola / hay corrosión).");
