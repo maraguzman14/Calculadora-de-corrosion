@@ -1,5 +1,9 @@
 package org.example;
-
+/*
+@Version: 1.0.0
+@Autores: Aymara Guzmán Velázquez, Sandra Elisa García Martínez y Christian Uzziel Silva Aguilar
+@Date: 24/11/26
+ */
 import java.util.*;
 
 public class CorrosionCalculadora {
