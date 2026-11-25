@@ -8,261 +8,195 @@ import java.util.*;
 
 public class CorrosionCalculadora {
     public static void main(String[] args) {
-        List<String> electrodos = new ArrayList<>(Arrays.asList(
-                "Oro", "Agua", "Platino", "Plata", "Mercurio", "Ion de Hierro", "Hidroxilo",
-                "Cobre", "Ion Estaño II", "Hidrógeno molecular", "Plomo", "Estaño", "Níquel", "Cobalto",
-                "Cadmio", "Hierro", "Cromo", "Zinc", "Aluminio", "Magnesio", "Sodio"));
-        List<String> simbolos = new ArrayList<>(Arrays.asList(
-                "Au", "H2O", "Pt", "Ag", "Hg", "Fe2+", "OH-",
-                "Cu", "Sn2+", "H2", "Pb", "Sn", "Ni", "Co",
-                "Cd", "Fe", "Cr", "Zn", "Al", "Mg", "Na"));
-        List<Integer> electrones = new ArrayList<>(Arrays.asList(
-                3, 4, 2, 1, 2, 1, 4,
-                2, 2, 2, 2, 2, 2, 2,
-                2, 2, 3, 2, 3, 2, 1));
+        Scanner sc = new Scanner(System.in).useLocale(Locale.US);
 
-        Scanner scanner = new Scanner(System.in);
-        int eleccion = 0;
 
-        while (eleccion != 2) {
-            System.out.println("----------------------------------Menú----------------------------------------");
-            System.out.println("1. Calcular corrosión y celda electroquímica (ecuación de Nernst).");
-            System.out.println("2. Salir.");
-            System.out.println("Elije una opción entre (1) y (2)");
-            eleccion = pedirNumeroValido(scanner, 1, 2);
+        String[] simbolos = {
+                "Au", "H2O", "Pt", "Ag", "Hg", "Fe2+", "OH-", "Cu", "Sn2+", "H2",
+                "Pb", "Sn", "Ni", "Co", "Cd", "Fe", "Cr", "Zn", "Al", "Mg", "Na"
+        };
 
-            if (eleccion == 2) {
-                break;
-            }
+        String[] nombres = {
+                "Oro", "Agua", "Platino", "Plata", "Mercurio", "Hierro (II)", "Hidroxido",
+                "Cobre", "Estano (II)", "Hidrogeno", "Plomo", "Estano", "Niquel",
+                "Cobalto", "Cadmio", "Hierro", "Cromo", "Zinc", "Aluminio", "Magnesio", "Sodio"
+        };
 
-            System.out.println("----------------------------------Elementos----------------------------------------");
-            System.out.println("Oro...................Au");
-            System.out.println("Agua..................H2O");
-            System.out.println("Platino...............Pt");
-            System.out.println("Plata.................Ag");
-            System.out.println("Mercurio..............Hg");
-            System.out.println("Ion de Hierro.........Fe2+");
-            System.out.println("Hidroxilo.............OH-");
-            System.out.println("Cobre.................Cu");
-            System.out.println("Ion Estaño II.........Sn2+");
-            System.out.println("Hidrógeno molecular...H2");
-            System.out.println("Plomo.................Pb");
-            System.out.println("Estaño................Sn");
-            System.out.println("Níquel................Ni");
-            System.out.println("Cobalto...............Co");
-            System.out.println("Cadmio................Cd");
-            System.out.println("Hierro................Fe");
-            System.out.println("Cromo.................Cr");
-            System.out.println("Zinc..................Zn");
-            System.out.println("Aluminio..............Al");
-            System.out.println("Magnesio..............Mg");
-            System.out.println("Sodio.................Na");
+        String[] semirreaccionesOxidacion = {
+                "Au -> Au3+ + 3e-",
+                "2H2O -> O2 + 4H+ + 4e-",
+                "Pt -> Pt2+ + 2e-",
+                "Ag -> Ag+ + e-",
+                "2Hg -> Hg2(2+) + 2e-",
+                "Fe2+ -> Fe3+ + e-",
+                "4(OH)- -> O2 + 2H2O + 4e-",
+                "Cu -> Cu2+ + 2e-",
+                "Sn2+ -> Sn4+ + 2e-",
+                "H2 -> 2H+ + 2e-",
+                "Pb -> Pb2+ + 2e-",
+                "Sn -> Sn2+ + 2e-",
+                "Ni -> Ni2+ + 2e-",
+                "Co -> Co2+ + 2e-",
+                "Cd -> Cd2+ + 2e-",
+                "Fe -> Fe2+ + 2e-",
+                "Cr -> Cr3+ + 3e-",
+                "Zn -> Zn2+ + 2e-",
+                "Al -> Al3+ + 3e-",
+                "Mg -> Mg2+ + 2e-",
+                "Na -> Na+ + e-"
+        };
 
-            int primerElectrodo = pedirElementoValido(scanner, simbolos,
-                    "Ingrese el elemento 1 (escriba su símbolo/iniciales, ej. Ni, Fe, Na): ");
-            int segundoElectrodo = pedirElementoValido(scanner, simbolos,
-                    "Ingrese el elemento 2 (escriba su símbolo/iniciales, ej. Ni, Fe, Na): ");
+        String[] semirreaccionesReduccion = {
+                "Au3+ + 3e- -> Au",
+                "O2 + 4H+ + 4e- -> 2H2O",
+                "Pt2+ + 2e- -> Pt",
+                "Ag+ + e- -> Ag",
+                "Hg2(2+) + 2e- -> 2Hg",
+                "Fe3+ + e- -> Fe2+",
+                "O2 + 2H2O + 4e- -> 4(OH)-",
+                "Cu2+ + 2e- -> Cu",
+                "Sn4+ + 2e- -> Sn2+",
+                "2H+ + 2e- -> H2",
+                "Pb2+ + 2e- -> Pb",
+                "Sn2+ + 2e- -> Sn",
+                "Ni2+ + 2e- -> Ni",
+                "Co2+ + 2e- -> Co",
+                "Cd2+ + 2e- -> Cd",
+                "Fe2+ + 2e- -> Fe",
+                "Cr3+ + 3e- -> Cr",
+                "Zn2+ + 2e- -> Zn",
+                "Al3+ + 3e- -> Al",
+                "Mg2+ + 2e- -> Mg",
+                "Na+ + e- -> Na"
+        };
 
-            while (primerElectrodo == segundoElectrodo) {
-                System.out.println("Error, no puedes elegir el mismo elemento.");
-                segundoElectrodo = pedirElementoValido(scanner, simbolos,
-                        "Ingrese el elemento 2 (escriba su símbolo/iniciales, ej. Ni, Fe, Na): ");
-            }
+        double[] eOxidacion = {
+                1.498,  1.229,  1.200,  0.799,  0.788,  0.771,  0.401,
+                0.337,  0.150,  0.000, -0.126, -0.136, -0.250, -0.277,
+                -0.403, -0.440, -0.744, -0.763, -1.662, -2.363, -2.714
+        };
 
-            double concentracion1 = pedirConcentracionValida(scanner,
-                    "Ingrese la concentración de la solución del primer electrodo (en Molaridad M): ");
-            double concentracion2 = pedirConcentracionValida(scanner,
-                    "Ingrese la concentración de la solución del segundo electrodo (en Molaridad M): ");
+        int[] electrones = {
+                3, 4, 2, 1, 2, 1, 4, 2, 2, 2,
+                2, 2, 2, 2, 2, 2, 3, 2, 3, 2, 1
+        };
 
-            double potencialElectrodo1 = potencialElectrodo(primerElectrodo);
-            double potencialElectrodo2 = potencialElectrodo(segundoElectrodo);
-
-            // Primer electrodo = Ánodo (se oxida), Segundo electrodo = Cátodo (se reduce)
-            String anodo = electrodos.get(primerElectrodo - 1);
-            int electronesAnodo = electrones.get(primerElectrodo - 1);
-            double concAnodo = concentracion1;
-
-            String catodo = electrodos.get(segundoElectrodo - 1);
-            int electronesCatodo = electrones.get(segundoElectrodo - 1);
-            double concCatodo = concentracion2;
-
-            double fuerzaElectromotriz = calcularFemEstandar(potencialElectrodo2, potencialElectrodo1);
-            int nCelda = calcularMCM(electronesAnodo, electronesCatodo);
-
-            // Fórmula: E = E° + (0.0592 / n) * log10([ion])
-            double nernstAnodo = potencialElectrodo1 + ((0.0592 / electronesAnodo) * Math.log10(concAnodo));
-            double nernstCatodo = potencialElectrodo2 + ((0.0592 / electronesCatodo) * Math.log10(concCatodo));
-            double fem = fuerzaElectromotriz + ((0.0592 / nCelda) * Math.log10(concCatodo / concAnodo));
-
-            double femEstandarRedondeada = Math.round(fuerzaElectromotriz * 1000.0) / 1000.0;
-            double femRedondeada = Math.round(fem * 1000.0) / 1000.0;
-
-            System.out.println("----------------------------------Resultados----------------------------------------");
-            System.out.println("Ánodo (especie que se oxida): " + anodo);
-            System.out.println("  Potencial (Nernst): " + String.format(Locale.US, "%.3f", nernstAnodo) + " V");
-            System.out.println("Cátodo (especie que se reduce): " + catodo);
-            System.out.println("  Potencial (Nernst): " + String.format(Locale.US, "%.3f", nernstCatodo) + " V");
-            System.out.println("FEM Estándar (E° celda): " + String.format(Locale.US, "%.3f", femEstandarRedondeada) + " V");
-            System.out.println("FEM (Potencial de Celda): " + String.format(Locale.US, "%.3f", femRedondeada) + " V");
-
-            if (femRedondeada > 0) {
-                System.out.println("Conclusión: La reacción es ESPONTÁNEA (ocurre por sí sola / hay corrosión).");
-            } else if (femRedondeada < 0) {
-                System.out.println("Conclusión: La reacción NO ES ESPONTÁNEA (FEM negativa, necesita energía externa).");
-            } else {
-                System.out.println("Conclusión: La reacción está en EQUILIBRIO (FEM = 0, sin tendencia neta a avanzar).");
-            }
+        System.out.println("=== ELECTRODOS DISPONIBLES (SIMBOLO EXACTO) ===");
+        for (int i = 0; i < simbolos.length; i++) {
+            System.out.printf("%-5s -> %-12s (E° ox: %+.3f V, n: %d)%n",
+                    simbolos[i], nombres[i], eOxidacion[i], electrones[i]);
         }
 
-        scanner.close();
+
+        int idx1 = pedirElectrodoValido(sc, simbolos, -1,
+                "\nIngresa el simbolo exacto del primer electrodo (ej. Zn, Ni, Au): ");
+        double conc1 = pedirNumeroPositivo(sc,
+                "Ingresa la concentracion (C_ion en M) de " + simbolos[idx1] + ": ");
+
+
+        int idx2 = pedirElectrodoValido(sc, simbolos, idx1,
+                "\nIngresa el simbolo exacto del segundo electrodo (diferente al primero): ");
+        double conc2 = pedirNumeroPositivo(sc,
+                "Ingresa la concentracion (C_ion en M) de " + simbolos[idx2] + ": ");
+
+
+        int idxAnodo, idxCatodo;
+        double concAnodo, concCatodo;
+
+        if (idx1 > idx2) {
+            idxAnodo = idx1;
+            concAnodo = conc1;
+            idxCatodo = idx2;
+            concCatodo = conc2;
+        } else {
+            idxAnodo = idx2;
+            concAnodo = conc2;
+            idxCatodo = idx1;
+            concCatodo = conc1;
+        }
+
+
+        double e0Anodo = eOxidacion[idxAnodo];
+        double e0Catodo = -eOxidacion[idxCatodo];
+        double e0Celda = e0Anodo + e0Catodo;
+
+
+        int nAnodo = electrones[idxAnodo];
+        int nCatodo = electrones[idxCatodo];
+
+        double eNoEstandarAnodo = e0Anodo + (0.0592 / nAnodo) * Math.log10(concAnodo);
+        double eNoEstandarCatodo = e0Catodo + (0.0592 / nCatodo) * Math.log10(concCatodo);
+        double eNoEstandarCelda = eNoEstandarAnodo + eNoEstandarCatodo;
+
+
+        System.out.println("\n================ RESULTADOS ================");
+        System.out.println("Anodo: " + simbolos[idxAnodo] + " (" + nombres[idxAnodo] + ") | Concentracion: " + concAnodo + " M");
+        System.out.println("Semirreaccion del anodo: " + semirreaccionesOxidacion[idxAnodo]);
+        System.out.println("Catodo: " + simbolos[idxCatodo] + " (" + nombres[idxCatodo] + ") | Concentracion: " + concCatodo + " M");
+        System.out.println("Semirreaccion del catodo: " + semirreaccionesReduccion[idxCatodo]);
+        System.out.println("Oxidacion: " + semirreaccionesOxidacion[idxAnodo]);
+        System.out.println("Reduccion: " + semirreaccionesReduccion[idxCatodo]);
+        System.out.printf("Potencial estandar (E° celda): %+.4f V%n", e0Celda);
+        System.out.printf("Potencial no estandar del anodo (E anodo): %+.4f V%n", eNoEstandarAnodo);
+        System.out.printf("Potencial no estandar del catodo (E catodo): %+.4f V%n", eNoEstandarCatodo);
+        System.out.printf("Potencial no estandar final (E celda): %+.4f V%n", eNoEstandarCelda);
+
+        System.out.println("\n--- Espontaneidad (segun potencial no estandar E) ---");
+        imprimirEspontaneidad(eNoEstandarCelda);
+
+        sc.close();
     }
 
-    public static int pedirElementoValido(Scanner scanner, List<String> simbolos, String mensaje) {
+    public static int pedirElectrodoValido(Scanner sc, String[] simbolos, int indiceProhibido, String mensaje) {
         while (true) {
             System.out.print(mensaje);
-            String entrada = scanner.nextLine().trim();
+            String entrada = sc.next().trim();
 
-            if (entrada.isEmpty()) {
-                System.out.println("Error: no escribiste ningún elemento.");
-                continue;
-            }
-
-            if (entrada.matches("\\d+")) {
-                System.out.println("Error: no se permiten números. Escribe el símbolo exacto del elemento (ej. Ni, Fe, Na).");
-                continue;
-            }
-
-            if (simbolos.contains(entrada)) {
-                return simbolos.indexOf(entrada) + 1;
-            }
-
-            boolean coincideIgnorandoMayusculas = false;
-            for (String s : simbolos) {
-                if (s.equalsIgnoreCase(entrada)) {
-                    coincideIgnorandoMayusculas = true;
+            int encontrado = -1;
+            for (int i = 0; i < simbolos.length; i++) {
+                if (simbolos[i].equals(entrada)) {
+                    encontrado = i;
                     break;
                 }
             }
 
-            if (coincideIgnorandoMayusculas) {
-                System.out.println("Error: respeta las mayúsculas y minúsculas exactas del símbolo (ej. Ni, Fe, Na).");
+            if (encontrado == -1) {
+                System.out.println("Error: '" + entrada + "' no es un simbolo valido. " +
+                        "Respeta mayusculas y minusculas (ejemplo: Au, no au ni AU).");
+            } else if (encontrado == indiceProhibido) {
+                System.out.println("Error: no puedes elegir el mismo electrodo dos veces.");
             } else {
-                System.out.println("Error: dato inválido. Escribe exactamente uno de los símbolos mostrados (ej. Ni, Fe, Na).");
+                return encontrado;
             }
         }
     }
 
-    public static int pedirNumeroValido(Scanner scanner, int min, int max) {
-        int numero = 0;
-        boolean valido = false;
-
-        while (!valido) {
-            String entrada = scanner.nextLine().trim();
-
-            if (entrada.isEmpty()) {
-                System.out.print("No escribiste nada. Elige un número (" + min + "-" + max + "): ");
-                continue;
-            }
-
-            if (!entrada.matches("\\d+")) {
-                System.out.print("Entrada inválida. Escribe solo números enteros sin letras ni signos (" + min + "-" + max + "): ");
-                continue;
-            }
-
-            try {
-                numero = Integer.parseInt(entrada);
-                if (numero >= min && numero <= max) {
-                    valido = true;
-                } else {
-                    System.out.print("Número fuera de rango. Elige entre " + min + " y " + max + ": ");
-                }
-            } catch (NumberFormatException e) {
-                System.out.print("Entrada inválida. Escribe solo un número entero (" + min + "-" + max + "): ");
-            }
-        }
-        return numero;
-    }
-
-    public static double pedirConcentracionValida(Scanner scanner, String mensaje) {
-        double conc = 0;
-        boolean valido = false;
-
-        while (!valido) {
+    public static double pedirNumeroPositivo(Scanner sc, String mensaje) {
+        while (true) {
             System.out.print(mensaje);
-            String entrada = scanner.nextLine().trim().replace(',', '.');
-
-            if (entrada.isEmpty()) {
-                System.out.println("Error: no escribiste ninguna concentración.");
+            if (!sc.hasNextDouble()) {
+                System.out.println("Error: ingresa un numero valido.");
+                sc.next();
                 continue;
             }
-
-            if (!entrada.matches("-?(\\d+(\\.\\d+)?|\\.\\d+)")) {
-                System.out.println("Error: escribe solo un número decimal válido sin letras ni símbolos.");
-                continue;
-            }
-
-            try {
-                conc = Double.parseDouble(entrada);
-                if (Double.isNaN(conc) || Double.isInfinite(conc)) {
-                    System.out.println("Error: el número no es válido.");
-                } else if (conc <= 0) {
-                    System.out.println("Error: la concentración debe ser mayor que 0.");
-                } else {
-                    valido = true;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Error: escribe un número válido.");
-            }
-        }
-        return conc;
-    }
-
-    public static double potencialElectrodo(int electrodo) {
-        switch (electrodo) {
-            case 1: return 1.498;
-            case 2: return 1.229;
-            case 3: return 1.200;
-            case 4: return 0.799;
-            case 5: return 0.788;
-            case 6: return 0.771;
-            case 7: return 0.401;
-            case 8: return 0.337;
-            case 9: return 0.150;
-            case 10: return 0.000;
-            case 11: return -0.126;
-            case 12: return -0.136;
-            case 13: return -0.250;
-            case 14: return -0.277;
-            case 15: return -0.403;
-            case 16: return -0.440;
-            case 17: return -0.744;
-            case 18: return -0.763;
-            case 19: return -1.662;
-            case 20: return -2.363;
-            case 21: return -2.714;
-            default: return 0.0;
-        }
-    }
-
-    public static double calcularFemEstandar(double potencialCatodo, double potencialAnodo) {
-        return potencialCatodo - potencialAnodo;
-    }
-
-    public static int calcularMCM(int a, int b) {
-        if (a <= 0 || b <= 0) {
-            return 1;
-        }
-        int mcm = 1;
-        int i = 2;
-        while (i <= a || i <= b) {
-            if (a % i == 0 || b % i == 0) {
-                mcm = mcm * i;
-                if (a % i == 0) a = a / i;
-                if (b % i == 0) b = b / i;
+            double valor = sc.nextDouble();
+            if (valor <= 0) {
+                System.out.println("Error: el valor debe ser mayor que 0.");
             } else {
-                i++;
+                return valor;
             }
         }
-        return mcm;
+    }
+
+    public static void imprimirEspontaneidad(double eNoEstandar) {
+        if (eNoEstandar > 0) {
+            System.out.printf("E = %+.4f V -> La reaccion es ESPONTANEA porque es positivo y es aquella " +
+                    "que ocurre por si sola, sin necesitar energia externa.%n", eNoEstandar);
+        } else if (eNoEstandar < 0) {
+            System.out.printf("E = %+.4f V -> La reaccion NO ES ESPONTANEA porque es negativo y " +
+                    "necesita energia externa.%n", eNoEstandar);
+        } else {
+            System.out.printf("E = %.4f V -> La reaccion esta en EQUILIBRIO (potencial igual a 0).%n", eNoEstandar);
+        }
     }
 }
