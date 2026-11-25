@@ -10,7 +10,6 @@ public class CorrosionCalculadora {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in).useLocale(Locale.US);
 
-
         String[] simbolos = {
                 "Au", "H2O", "Pt", "Ag", "Hg", "Fe2+", "OH-", "Cu", "Sn2+", "H2",
                 "Pb", "Sn", "Ni", "Co", "Cd", "Fe", "Cr", "Zn", "Al", "Mg", "Na"
@@ -87,18 +86,15 @@ public class CorrosionCalculadora {
                     simbolos[i], nombres[i], eOxidacion[i], electrones[i]);
         }
 
-
         int idx1 = pedirElectrodoValido(sc, simbolos, -1,
                 "\nIngresa el simbolo exacto del primer electrodo (ej. Zn, Ni, Au): ");
         double conc1 = pedirNumeroPositivo(sc,
                 "Ingresa la concentracion (C_ion en M) de " + simbolos[idx1] + ": ");
 
-
         int idx2 = pedirElectrodoValido(sc, simbolos, idx1,
                 "\nIngresa el simbolo exacto del segundo electrodo (diferente al primero): ");
         double conc2 = pedirNumeroPositivo(sc,
                 "Ingresa la concentracion (C_ion en M) de " + simbolos[idx2] + ": ");
-
 
         int idxAnodo, idxCatodo;
         double concAnodo, concCatodo;
@@ -115,20 +111,18 @@ public class CorrosionCalculadora {
             concCatodo = conc1;
         }
 
-
-        double e0Anodo = eOxidacion[idxAnodo];
         double e0Catodo = -eOxidacion[idxCatodo];
-        double e0Celda = e0Anodo + e0Catodo;
-
+        double e0Anodo = eOxidacion[idxAnodo];
+        double e0Celda = e0Catodo + e0Anodo;
 
         int nAnodo = electrones[idxAnodo];
         int nCatodo = electrones[idxCatodo];
 
-        double eNoEstandarAnodo = e0Anodo + (0.0592 / nAnodo) * Math.log10(concAnodo);
-        double eNoEstandarCatodo = e0Catodo + (0.0592 / nCatodo) * Math.log10(concCatodo);
-        double eNoEstandarCelda = eNoEstandarAnodo + eNoEstandarCatodo;
+        double eNoEstandarAnodo = eOxidacion[idxAnodo] + (0.0592 / nAnodo) * Math.log10(concAnodo);
+        double eNoEstandarCatodo = -(eOxidacion[idxCatodo] + (0.0592 / nCatodo) * Math.log10(concCatodo));
+        double eNoEstandarCelda = eNoEstandarCatodo + eNoEstandarAnodo;
 
-
+        // Mostrar resultados
         System.out.println("\n================ RESULTADOS ================");
         System.out.println("Anodo: " + simbolos[idxAnodo] + " (" + nombres[idxAnodo] + ") | Concentracion: " + concAnodo + " M");
         System.out.println("Semirreaccion del anodo: " + semirreaccionesOxidacion[idxAnodo]);
@@ -175,13 +169,13 @@ public class CorrosionCalculadora {
         while (true) {
             System.out.print(mensaje);
             if (!sc.hasNextDouble()) {
-                System.out.println("Error: ingresa un numero valido.");
-                sc.next();
+                String invalido = sc.next();
+                System.out.println("Error: '" + invalido + "' no es un numero valido. Ingresa un numero decimal (ej. 0.10).");
                 continue;
             }
             double valor = sc.nextDouble();
-            if (valor <= 0) {
-                System.out.println("Error: el valor debe ser mayor que 0.");
+            if (!Double.isFinite(valor) || valor <= 0) {
+                System.out.println("Error: el valor debe ser un numero positivo mayor que 0.");
             } else {
                 return valor;
             }
